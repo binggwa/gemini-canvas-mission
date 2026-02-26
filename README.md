@@ -37,7 +37,7 @@ Gemini Canvas 미션 결과물을 관리하는 저장소입니다.
 ```
 
 ### 2. 게임 - JLPTQuizGame
-#### https://gemini.google.com/share/60aa4ccfc48d
+#### https://gemini.google.com/share/abdeabda25f8
 ```
 🌸📚 JLPT AI 퀴즈 게임
 
