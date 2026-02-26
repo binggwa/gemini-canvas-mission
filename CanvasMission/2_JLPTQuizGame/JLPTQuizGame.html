@@ -13,7 +13,6 @@
             background-color: #f3f4f6;
         }
 
-        /* 부드러운 화면 전환을 위한 애니메이션 */
         .fade-in {
             animation: fadeIn 0.4s ease-in-out;
         }
@@ -23,13 +22,11 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 통통 튀는 이모티콘 애니메이션 (딜레이 추가) */
         .bounce-delay {
             animation: bounce 1s infinite;
             animation-delay: 0.2s;
         }
 
-        /* 퀴즈 선택지 호버 효과 */
         .option-btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -39,7 +36,6 @@
             transition: all 0.2s ease;
         }
 
-        /* 로딩 스피너 */
         .spinner {
             border: 3px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
@@ -54,49 +50,48 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* 스크롤바 꾸미기 (AI 채팅창) */
-        .chat-container::-webkit-scrollbar {
+        /* 커스텀 스크롤바 적용 */
+        .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
         }
-        .chat-container::-webkit-scrollbar-track {
-            background: #f1f1f1; 
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
             border-radius: 4px;
         }
-        .chat-container::-webkit-scrollbar-thumb {
-            background: #c1c1c1; 
-            border-radius: 4px;
-        }
-        .chat-container::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8; 
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
         }
     </style>
 </head>
-<body class="text-gray-800 h-screen flex items-center justify-center p-2 sm:p-4 bg-gray-100 overflow-hidden">
+<body class="text-gray-800 h-screen w-screen flex items-center justify-center p-2 sm:p-4 bg-gray-100 overflow-hidden box-border">
 
-    <!-- 메인 컨테이너 (좌측: 앱 영역 / 우측: 상시 챗봇 영역으로 완벽 분할) -->
-    <div class="flex flex-col md:flex-row w-full max-w-7xl h-full md:h-[92vh] gap-4 mx-auto">
+    <!-- 메인 컨테이너 (고정된 높이와 overflow-hidden으로 스크롤 분리 완벽 보장) -->
+    <div class="flex flex-col md:flex-row w-full max-w-7xl h-full md:h-[94vh] gap-4 mx-auto overflow-hidden">
         
         <!-- ================= 좌측: 메인 앱 영역 (시작/퀴즈/결과) ================= -->
-        <div id="app-content" class="flex-1 bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col relative h-[50vh] md:h-full">
+        <div id="app-content" class="flex-1 bg-white rounded-2xl shadow-xl flex flex-col overflow-hidden relative border border-gray-200">
             
             <!-- 1. 시작 화면 -->
-            <div id="screen-start" class="p-8 flex flex-col items-center justify-center fade-in flex-grow overflow-y-auto">
-                <div class="w-24 h-24 bg-gradient-to-tr from-pink-100 to-rose-100 rounded-full flex items-center justify-center mb-6 shadow-sm border-4 border-white relative">
+            <div id="screen-start" class="flex flex-col items-center justify-center p-8 flex-1 overflow-y-auto custom-scrollbar fade-in">
+                <div class="w-24 h-24 bg-gradient-to-tr from-pink-100 to-rose-100 rounded-full flex items-center justify-center mb-6 shadow-sm border-4 border-white relative shrink-0">
                     <span class="text-5xl drop-shadow-sm ml-2">🌸📚</span>
                 </div>
                 
-                <div class="flex items-center justify-center gap-3 mb-3 w-full">
-                    <span class="animate-bounce text-3xl">✨</span>
-                    <h1 class="text-3xl sm:text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 tracking-tight">
+                <div class="flex items-center justify-center gap-3 mb-3 w-full shrink-0">
+                    <span class="animate-bounce text-3xl hidden sm:block">✨</span>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 tracking-tight pb-1">
                         JLPT 필수 단어 퀴즈
                     </h1>
-                    <span class="bounce-delay text-3xl">🚀</span>
+                    <span class="bounce-delay text-3xl hidden sm:block">🚀</span>
                 </div>
                 
-                <p class="text-gray-500 text-center mb-8 font-medium">AI 선생님과 함께 뉘앙스까지 완벽하게 학습하세요!</p>
+                <p class="text-gray-500 text-center mb-8 font-medium shrink-0">AI 선생님과 함께 뉘앙스까지 완벽하게 학습하세요!</p>
                 
-                <h2 class="text-lg font-semibold mb-4 text-gray-700">도전할 난이도를 선택하세요</h2>
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 w-full max-w-md">
+                <h2 class="text-lg font-semibold mb-4 text-gray-700 shrink-0">도전할 난이도를 선택하세요</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 w-full max-w-md shrink-0 mb-8">
                     <button onclick="startQuiz('N5')" class="py-3 px-4 bg-white border-2 border-green-500 text-green-600 font-bold rounded-xl hover:bg-green-50 transition">N5 (입문)</button>
                     <button onclick="startQuiz('N4')" class="py-3 px-4 bg-white border-2 border-blue-400 text-blue-500 font-bold rounded-xl hover:bg-blue-50 transition">N4 (초급)</button>
                     <button onclick="startQuiz('N3')" class="py-3 px-4 bg-white border-2 border-indigo-500 text-indigo-600 font-bold rounded-xl hover:bg-indigo-50 transition">N3 (중급)</button>
@@ -106,8 +101,8 @@
             </div>
 
             <!-- 2. 퀴즈 화면 -->
-            <div id="screen-quiz" class="hidden flex-col h-full fade-in">
-                <!-- 상단 헤더 & 프로그레스 바 -->
+            <div id="screen-quiz" class="hidden flex-col flex-1 overflow-hidden fade-in">
+                <!-- 상단 헤더 & 프로그레스 바 (고정) -->
                 <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 shrink-0">
                     <div class="flex justify-between items-center mb-2">
                         <span id="quiz-level-badge" class="px-3 py-1 bg-blue-100 text-blue-700 font-bold rounded-full text-sm">N5</span>
@@ -118,19 +113,19 @@
                     </div>
                 </div>
 
-                <!-- 문제 및 옵션 영역 (스크롤 가능) -->
-                <div class="flex-grow overflow-y-auto p-6 flex flex-col relative">
-                    <div class="flex flex-col items-center justify-center mb-8 mt-4">
+                <!-- 문제 및 옵션 영역 (완벽하게 독립 스크롤 적용) -->
+                <div class="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 flex flex-col relative bg-white">
+                    <div class="flex flex-col items-center justify-center mb-6 mt-2 shrink-0">
                         <p class="text-gray-500 text-sm mb-2">다음 단어의 뜻은?</p>
                         <h2 id="question-word" class="text-5xl font-bold text-gray-800 text-center break-words font-[Noto Sans JP]">食べる</h2>
                     </div>
 
-                    <div id="options-container" class="flex flex-col gap-3 mb-6 max-w-lg mx-auto w-full">
+                    <div id="options-container" class="flex flex-col gap-3 mb-6 max-w-lg mx-auto w-full shrink-0">
                         <!-- 버튼들이 JS로 렌더링 됩니다. -->
                     </div>
 
                     <!-- 정답 확인 후 나타나는 피드백 (학습 카드) -->
-                    <div id="feedback-card" class="hidden bg-blue-50 rounded-xl p-5 border border-blue-100 mb-6 fade-in shadow-sm max-w-lg mx-auto w-full">
+                    <div id="feedback-card" class="hidden bg-blue-50 rounded-xl p-5 border border-blue-100 mb-6 fade-in shadow-sm max-w-lg mx-auto w-full shrink-0">
                         <div class="flex items-center gap-2 mb-2">
                             <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded">읽기</span>
                             <p id="feedback-reading" class="text-lg font-medium text-gray-800">たべる (타베루)</p>
@@ -152,11 +147,10 @@
                             <div id="mnemonic-result" class="hidden mt-3 text-sm text-gray-700 bg-white p-4 rounded-xl border border-indigo-100 shadow-sm whitespace-pre-wrap leading-relaxed"></div>
                         </div>
                     </div>
-                    <div class="h-16"></div> 
                 </div>
 
                 <!-- 하단 다음 문제 버튼 (고정) -->
-                <div id="next-btn-container" class="hidden shrink-0 p-4 bg-white border-t border-gray-200 mt-auto fade-in">
+                <div id="next-btn-container" class="hidden shrink-0 p-4 bg-white border-t border-gray-200 fade-in">
                     <button onclick="nextQuestion()" class="w-full max-w-lg mx-auto block py-4 bg-gray-900 text-white font-bold text-lg rounded-xl hover:bg-gray-800 transition shadow-md">
                         다음 문제로
                     </button>
@@ -164,9 +158,9 @@
             </div>
 
             <!-- 3. 결과 화면 -->
-            <div id="screen-result" class="hidden p-6 md:p-8 flex flex-col items-center fade-in flex-grow overflow-y-auto">
-                <div class="w-full max-w-md flex flex-col items-center mx-auto my-auto pb-8">
-                    <h2 class="text-3xl font-bold text-gray-800 mb-2">퀴즈 결과</h2>
+            <div id="screen-result" class="hidden flex-col items-center p-6 md:p-8 flex-1 overflow-y-auto custom-scrollbar fade-in">
+                <div class="w-full max-w-md flex flex-col items-center mx-auto my-auto pb-8 shrink-0">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2 mt-4">퀴즈 결과</h2>
                     <p id="result-message" class="text-gray-500 mb-8">수고하셨습니다!</p>
 
                     <div class="relative w-40 h-40 mb-6 flex items-center justify-center">
@@ -184,12 +178,12 @@
                         <span class="text-gray-600 font-medium">정답률: <span id="result-percentage" class="text-blue-600 font-bold text-xl">80%</span></span>
                     </div>
 
-                    <!-- ✨ 배운 단어로 이야기 만들기 영역 추가 -->
+                    <!-- ✨ 배운 단어로 이야기 만들기 영역 -->
                     <div class="w-full mb-8">
                         <button onclick="generateReviewStory()" id="btn-story" class="w-full py-3.5 bg-indigo-500 text-white font-bold rounded-xl hover:bg-indigo-600 transition shadow-sm flex items-center justify-center gap-2">
                             ✨ 오늘 배운 단어로 복습 이야기 만들기
                         </button>
-                        <div id="story-result" class="hidden mt-4 p-5 bg-white border border-indigo-100 rounded-xl text-gray-700 text-sm leading-relaxed shadow-sm whitespace-pre-wrap"></div>
+                        <div id="story-result" class="hidden mt-4 p-5 bg-white border border-indigo-100 rounded-xl text-gray-700 text-sm leading-relaxed shadow-sm whitespace-pre-wrap text-left"></div>
                     </div>
 
                     <div class="flex flex-col w-full gap-3 mt-auto">
@@ -205,8 +199,8 @@
         </div>
 
         <!-- ================= 우측: 상시 대기 제미나이 챗봇 ================= -->
-        <div id="persistent-chatbot" class="w-full md:w-[380px] lg:w-[420px] bg-white rounded-2xl shadow-xl flex flex-col h-[40vh] md:h-full shrink-0 border border-gray-100 overflow-hidden">
-            <!-- 챗봇 헤더 -->
+        <div id="persistent-chatbot" class="w-full md:w-[380px] lg:w-[420px] bg-white rounded-2xl shadow-xl flex flex-col h-[45vh] md:h-full shrink-0 border border-gray-200 overflow-hidden relative">
+            <!-- 챗봇 헤더 (고정) -->
             <div class="bg-indigo-600 px-5 py-4 flex items-center gap-3 shrink-0 shadow-sm text-white z-10">
                 <span class="text-2xl bg-white/20 p-1.5 rounded-lg">🤖</span>
                 <div>
@@ -221,12 +215,12 @@
                 </div>
             </div>
             
-            <!-- 채팅 로그 영역 -->
-            <div id="chat-messages" class="flex-grow p-4 overflow-y-auto chat-container flex flex-col gap-4 text-sm bg-[#f8fafc]">
+            <!-- 채팅 로그 영역 (스크롤) -->
+            <div id="chat-messages" class="flex-1 overflow-y-auto custom-scrollbar p-4 flex flex-col gap-4 text-sm bg-[#f8fafc]">
                 <!-- 초기 로드 시 환영 메시지가 JS로 삽입됩니다. -->
             </div>
             
-            <!-- 입력창 영역 -->
+            <!-- 입력창 영역 (고정) -->
             <div class="p-3 border-t border-gray-200 bg-white flex gap-2 shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-10">
                 <input type="text" id="ai-input" placeholder="유사한 단어나 뉘앙스를 물어보세요!" class="flex-grow px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition-all" onkeypress="handleEnter(event)">
                 <button onclick="sendChatMessage()" id="ai-send-btn" class="bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-indigo-700 transition disabled:bg-gray-400 flex items-center justify-center min-w-[70px] shadow-sm">
@@ -240,7 +234,6 @@
     <!-- JavaScript 로직 -->
     <script>
         // --- 1. 단어 데이터 (N5 ~ N1) ---
-        // 데이터 용량 최적화를 위해 배열 압축 포맷을 사용 (난이도별 50개씩 총 250문항!)
         const rawVocabData = {
             N5: [
                 ["食べる", "たべる", "타베루", "먹다", "朝ごはんを食べる。", "아사고항오 타베루.", "아침밥을 먹다.", "마시다,가다,먹다,보다,자다", 2],
@@ -560,10 +553,17 @@
             `;
         };
 
-        // --- 4. 화면 제어 로직 ---
+        // --- 4. 화면 제어 로직 (완벽한 display 치환 방식) ---
         function switchScreen(screenId) {
-            Object.values(screens).forEach(screen => screen.classList.add('hidden'));
-            screens[screenId].classList.remove('hidden');
+            Object.keys(screens).forEach(key => {
+                if (key === screenId) {
+                    screens[key].classList.remove('hidden');
+                    screens[key].classList.add('flex'); // 화면 보일 때 무조건 flex 적용
+                } else {
+                    screens[key].classList.add('hidden');
+                    screens[key].classList.remove('flex'); // 숨길 때 flex 제거하여 간섭 방지
+                }
+            });
         }
 
         // --- 5. 퀴즈 진행 로직 ---
@@ -596,7 +596,7 @@
             dom.mnemonicResult.classList.add('hidden');
             dom.mnemonicResult.innerHTML = '';
 
-            // 매 문제마다 새로운 챗봇 가이드 말풍선 '추가' (기존 내용 덮어쓰기 X)
+            // 매 문제마다 새로운 챗봇 가이드 말풍선 '추가'
             const guideMsg = `💡 ${currentLevel} 퀴즈 진행 중!<br>현재 단어 <strong class="text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">「${currentQ.word}」</strong> 의 추가적인 활용례나 뉘앙스, 관련단어가 궁금하시다면 언제든 질문해주세요! <br><span class="text-xs text-gray-500 mt-1.5 block">※ 단, 정답은 직접 알려드릴 수 없습니다😉</span>`;
             appendMessage('system', guideMsg);
             
@@ -645,7 +645,9 @@
             dom.nextBtnArea.classList.remove('hidden');
 
             setTimeout(() => {
-                dom.nextBtnArea.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                // 부드러운 하단 스크롤
+                const scrollableDiv = dom.feedbackCard.parentElement;
+                scrollableDiv.scrollTo({ top: scrollableDiv.scrollHeight, behavior: 'smooth' });
             }, 100);
         }
 
@@ -684,7 +686,6 @@
                 dom.storyResult.classList.add('hidden');
                 dom.storyResult.innerHTML = '';
                 
-                // 결과화면 진입 시 챗봇 가이드
                 appendMessage('system', `🎉 퀴즈가 종료되었습니다! 총 ${score}개를 맞추셨네요.<br>결과 화면에서 틀린 문제나 전체 내용에 대해 추가로 궁금한 점이 있다면 자유롭게 질문해주세요.`);
             }, 300);
         }
@@ -719,10 +720,8 @@
             if (sender === 'user') {
                 div.className = 'bg-indigo-600 text-white p-3.5 rounded-2xl rounded-tr-none self-end max-w-[85%] whitespace-pre-wrap shadow-md leading-relaxed';
             } else if (sender === 'system') {
-                // 시스템(가이드) 메시지는 약간 다른 스타일
                 div.className = 'bg-indigo-50 border border-indigo-100 text-indigo-900 p-3.5 rounded-2xl rounded-tl-none self-start max-w-[90%] whitespace-pre-wrap shadow-sm leading-relaxed';
             } else {
-                // AI 응답 메시지
                 div.className = 'bg-white border border-gray-200 text-gray-800 p-3.5 rounded-2xl rounded-tl-none self-start max-w-[90%] whitespace-pre-wrap shadow-sm leading-relaxed';
             }
             div.innerHTML = text;
@@ -776,10 +775,10 @@
             dom.chatMessages.appendChild(loadingDiv);
             dom.chatMessages.scrollTop = dom.chatMessages.scrollHeight;
 
-            // 현재 퀴즈 컨텍스트 (퀴즈 진행 중이 아닐 수도 있으므로 예외 처리)
             let systemPrompt = "당신은 친절한 일본어 학습 선생님입니다. 사용자에게 일본어 학습 관련 힌트나 조언을 제공하세요.";
             
-            if (questionList.length > 0 && !dom.screens?.start?.classList?.contains('hidden')) {
+            // 퀴즈 화면이 활성화(flex) 되어 있을 때만 정답 제한 프롬프트 적용
+            if (questionList.length > 0 && screens.quiz.classList.contains('flex')) {
                 const currentQ = questionList[currentIndex];
                 if (currentQ) {
                     const optionString = currentQ.options.join(', ');
@@ -825,6 +824,9 @@
             try {
                 const response = await fetchGeminiWithBackoff(prompt, "당신은 센스있고 유머러스한 일본어 단어 암기 전문가입니다.");
                 dom.mnemonicResult.innerHTML = `💡 <strong>AI 암기 꿀팁:</strong>\n${response}`;
+                // 생성 후 부드럽게 스크롤
+                const scrollableDiv = dom.mnemonicResult.parentElement.parentElement.parentElement;
+                scrollableDiv.scrollTo({ top: scrollableDiv.scrollHeight, behavior: 'smooth' });
             } catch (error) {
                 dom.mnemonicResult.innerHTML = "암기법을 생성하는데 실패했습니다. 다시 시도해주세요.";
             } finally {
