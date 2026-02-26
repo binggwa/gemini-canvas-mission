@@ -9,6 +9,7 @@ Gemini Canvas 미션 결과물을 관리하는 저장소입니다.
 
 ## 앱 소개
 ### 1. 유틸리티 앱 - QuestTracker
+#### https://gemini.google.com/share/7bd14d3ba52d
 ```
 🎮 퀘스트 트래커 (Quest Tracker)
 
@@ -36,6 +37,7 @@ Gemini Canvas 미션 결과물을 관리하는 저장소입니다.
 ```
 
 ### 2. 게임 - JLPTQuizGame
+#### https://gemini.google.com/share/60aa4ccfc48d
 ```
 🌸📚 JLPT AI 퀴즈 게임
 
@@ -66,6 +68,7 @@ N5(입문) ~ N1(마스터) 레벨별 필수 단어 5지 선다형 퀴즈 (총 25
 퀴즈 완료 후, 방금 푼 10개의 단어를 모두 활용한 '짧은 일본어 스토리(해석 포함)'를 AI가 창작하여 문맥 속 복습 지원
 ```
 ### 3. 학습 앱 - AsyncLearningQuiz
+#### https://gemini.google.com/share/1589e16e1357
 ```
 🚀 JS 비동기 마스터 퀴즈
 
@@ -96,6 +99,7 @@ N5(입문) ~ N1(마스터) 레벨별 필수 단어 5지 선다형 퀴즈 (총 25
 ⚡ Zero Dependency: 어떤 프레임워크나 라이브러리 설치 없이, index.html 파일 하나만 열면 브라우저 환경에서 즉시 실행됩니다.
 ```
 ### 4. 페어 프롬프트 릴레이 앱 - DailyTalkGenerator
+#### https://gemini.google.com/share/ca5f70c9633f
 ```
 6조 데일리 미팅 주제 생성기
 
