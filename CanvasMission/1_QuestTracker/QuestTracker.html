@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>퀘스트 트래커 (로컬버전)</title>
+    <title>퀘스트 트래커</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
@@ -21,6 +21,23 @@
 </head>
 <body class="min-h-screen bg-slate-50 text-slate-800 p-4 md:p-8">
 
+    <!-- 삭제 확인 모달 -->
+    <div id="delete-modal" style="display: none;" class="fixed inset-0 bg-slate-900/40 z-[100] flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl transform transition-transform">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-500">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800">게임 삭제</h3>
+            </div>
+            <p class="text-slate-600 mb-6 leading-relaxed">이 게임과 모든 숙제 목록을 영구적으로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.</p>
+            <div class="flex justify-end gap-3">
+                <button onclick="window.closeDeleteModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-medium transition-colors">취소</button>
+                <button onclick="window.confirmDelete()" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium transition-colors shadow-lg shadow-red-200">삭제하기</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 데이터 로딩 중 표시 화면 (처음엔 보여주고 상황에 따라 숨김) -->
     <div id="loading-overlay" class="fixed inset-0 bg-slate-50 z-50 flex flex-col items-center justify-center text-slate-500 gap-4">
         <i class="fa-solid fa-gamepad text-5xl animate-pulse text-indigo-400"></i>
@@ -33,7 +50,7 @@
             <div>
                 <h1 class="text-3xl font-bold flex items-center gap-2">
                     <i class="fa-solid fa-gamepad text-indigo-600"></i>
-                    퀘스트 트래커 <span id="mode-badge" class="text-sm font-normal text-slate-400 bg-slate-200 px-2 py-1 rounded-md ml-2">준비 중</span>
+                    퀘스트 트래커 <span id="mode-badge" class="text-sm font-normal text-slate-400 bg-slate-200 px-2 py-1 rounded-md ml-2 transition-all">준비 중</span>
                 </h1>
                 <p class="text-slate-500 mt-1">잊기 쉬운 게임 숙제를 한곳에서 관리하세요.</p>
             </div>
@@ -54,10 +71,28 @@
             <p>추가된 게임이 없습니다. 상단의 버튼을 눌러 시작하세요!</p>
         </div>
 
-        <!-- 푸터 -->
-        <footer class="mt-12 pt-8 border-t border-slate-200 text-center text-slate-400 text-sm">
-            <p>© 퀘스트 트래커 - 텍스트를 클릭하여 내용을 수정할 수 있습니다.</p>
-            <div class="flex justify-center gap-4 mt-2">
+        <!-- 푸터 (사용 설명서) -->
+        <footer class="mt-12 pt-8 border-t border-slate-200 text-slate-500 text-sm">
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 text-left max-w-3xl mx-auto shadow-sm">
+                <h4 class="font-bold text-slate-700 mb-4 flex items-center gap-2 text-base">
+                    <i class="fa-solid fa-book-open text-indigo-500"></i> 사용 설명서
+                </h4>
+                <ul class="space-y-3 list-disc list-inside text-slate-600 leading-relaxed">
+                    <li><strong class="text-slate-700">"새 게임 추가"</strong> 버튼을 통해 원하는 만큼 게임을 추가할 수 있습니다.</li>
+                    <li><strong class="text-slate-700">"숙제 항목 추가"</strong> 버튼을 통해 각 게임별로 원하는 만큼 숙제목록을 늘릴 수 있습니다.</li>
+                    <li>상태 체크박스를 클릭하면 완료 표시로 바뀌며, <strong class="text-slate-700">일정 주기 이후에 미완료 상태로 초기화</strong>됩니다.
+                        <ul class="list-none pl-6 mt-2 space-y-1.5 text-slate-500 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                            <li><span class="font-semibold text-slate-600">일일 :</span> 매일 00시</li>
+                            <li><span class="font-semibold text-slate-600">주간 :</span> 매주 월요일 00시</li>
+                            <li><span class="font-semibold text-slate-600">월간 :</span> 매달 1일 00시</li>
+                        </ul>
+                    </li>
+                    <li><strong class="text-slate-700">"숙제 목록"</strong>에서 숙제 텍스트를 클릭해 내용을 변경할 수 있습니다.</li>
+                    <li>카드 좌측 상단의 <strong class="text-slate-700">그립 아이콘(<i class="fa-solid fa-grip-vertical mx-1"></i>)</strong>을 드래그하여 게임 카드의 순서를 변경할 수 있습니다.</li>
+                </ul>
+            </div>
+            
+            <div class="flex justify-center gap-4 mt-6">
                 <span class="flex items-center gap-1"><i class="fa-regular fa-circle"></i> 미완료</span>
                 <span class="flex items-center gap-1 text-emerald-500"><i class="fa-solid fa-circle-check"></i> 완료</span>
             </div>
@@ -111,10 +146,10 @@
                             const docRef = docRefFunc(db, 'artifacts', appId, 'users', currentUser.uid, 'questData', 'main');
                             
                             onSnapshot(docRef, (snapshot) => {
-                                // 로딩 화면 해제 및 뱃지 업데이트
+                                // 로딩 화면 해제 및 뱃지 업데이트 (문구 수정됨)
                                 document.getElementById('loading-overlay').style.display = 'none';
                                 document.getElementById('app-content').style.display = 'block';
-                                document.getElementById('mode-badge').textContent = '클라우드 동기화됨';
+                                document.getElementById('mode-badge').textContent = '동기화 완료';
                                 document.getElementById('mode-badge').className = 'text-sm font-normal text-indigo-600 bg-indigo-100 px-2 py-1 rounded-md ml-2 transition-all';
 
                                 if (snapshot.exists()) {
@@ -244,11 +279,80 @@
             window.saveAndRender();
         }
 
+        // --- 삭제 모달 관련 로직 ---
+        window.gameToDelete = null;
+
         window.deleteGame = function(gameId) {
-            if(confirm('이 게임을 삭제하시겠습니까?')) {
-                window.games = window.games.filter(g => g.id !== gameId);
+            window.gameToDelete = gameId;
+            document.getElementById('delete-modal').style.display = 'flex';
+        }
+
+        window.closeDeleteModal = function() {
+            window.gameToDelete = null;
+            document.getElementById('delete-modal').style.display = 'none';
+        }
+
+        window.confirmDelete = function() {
+            if (window.gameToDelete) {
+                window.games = window.games.filter(g => g.id !== window.gameToDelete);
                 window.saveAndRender();
+                window.closeDeleteModal();
             }
+        }
+
+        // --- 드래그 앤 드롭 로직 ---
+        window.draggedGameId = null;
+
+        window.handleDragStart = function(e, id) {
+            window.draggedGameId = id;
+            e.dataTransfer.effectAllowed = 'move';
+            // 고스트 이미지가 생성될 수 있도록 약간의 딜레이 후 투명도 적용
+            setTimeout(() => {
+                e.target.classList.add('opacity-40', 'scale-95');
+            }, 10);
+        }
+
+        window.handleDragEnd = function(e) {
+            e.target.classList.remove('opacity-40', 'scale-95');
+            e.target.setAttribute('draggable', 'false'); // 드래그 종료 시 다시 비활성화 (텍스트 선택 보호)
+            window.draggedGameId = null;
+        }
+
+        window.handleDragOver = function(e) {
+            e.preventDefault(); // 드롭을 허용하려면 필수
+            e.dataTransfer.dropEffect = 'move';
+            const card = e.target.closest('.game-card');
+            if (card && window.draggedGameId) {
+                card.classList.add('border-indigo-500', 'shadow-md');
+            }
+        }
+
+        window.handleDragLeave = function(e) {
+            const card = e.target.closest('.game-card');
+            if (card) {
+                card.classList.remove('border-indigo-500', 'shadow-md');
+            }
+        }
+
+        window.handleDrop = function(e, targetId) {
+            e.preventDefault();
+            const card = e.target.closest('.game-card');
+            if (card) {
+                card.classList.remove('border-indigo-500', 'shadow-md');
+            }
+
+            if (window.draggedGameId && window.draggedGameId !== targetId) {
+                const draggedIndex = window.games.findIndex(g => g.id === window.draggedGameId);
+                const targetIndex = window.games.findIndex(g => g.id === targetId);
+
+                if (draggedIndex > -1 && targetIndex > -1) {
+                    // 배열 순서 변경
+                    const [draggedGame] = window.games.splice(draggedIndex, 1);
+                    window.games.splice(targetIndex, 0, draggedGame);
+                    window.saveAndRender();
+                }
+            }
+            window.draggedGameId = null;
         }
 
         window.addTask = function(gameId) {
@@ -360,10 +464,23 @@
                 });
 
                 html += `
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col transition-all hover:shadow-md">
+                    <div ondragstart="handleDragStart(event, ${game.id})" 
+                         ondragend="handleDragEnd(event)"
+                         ondragover="handleDragOver(event)" 
+                         ondragleave="handleDragLeave(event)" 
+                         ondrop="handleDrop(event, ${game.id})"
+                         class="game-card bg-white rounded-2xl shadow-sm border-2 border-transparent overflow-hidden flex flex-col transition-all hover:shadow-md">
                         <div class="bg-slate-50 p-4 border-b border-slate-200 flex items-center justify-between">
-                            <input type="text" value="${game.title}" oninput="updateGameTitle(${game.id}, this.value)" onchange="window.saveDataOnly()" class="bg-transparent font-bold text-lg text-slate-800 focus:ring-2 focus:ring-indigo-500 rounded px-2 py-1 w-full mr-4" placeholder="게임 이름 입력">
-                            <button onclick="deleteGame(${game.id})" class="text-slate-400 hover:text-red-500 transition-colors p-2" title="게임 삭제">
+                            <!-- 드래그 핸들 (그립 아이콘) -->
+                            <div class="cursor-grab active:cursor-grabbing px-2 text-slate-300 hover:text-indigo-400 transition-colors shrink-0" 
+                                 title="드래그하여 순서 변경"
+                                 onmousedown="this.closest('.game-card').setAttribute('draggable', 'true')"
+                                 onmouseup="this.closest('.game-card').setAttribute('draggable', 'false')"
+                                 onmouseleave="this.closest('.game-card').setAttribute('draggable', 'false')">
+                                <i class="fa-solid fa-grip-vertical pointer-events-none"></i>
+                            </div>
+                            <input type="text" value="${game.title}" oninput="updateGameTitle(${game.id}, this.value)" onchange="window.saveDataOnly()" class="bg-transparent font-bold text-lg text-slate-800 focus:ring-2 focus:ring-indigo-500 rounded px-2 py-1 w-full mx-2" placeholder="게임 이름 입력">
+                            <button onclick="deleteGame(${game.id})" class="text-slate-400 hover:text-red-500 transition-colors p-2 shrink-0" title="게임 삭제">
                                 <i class="fa-solid fa-trash-can"></i>
                             </button>
                         </div>
