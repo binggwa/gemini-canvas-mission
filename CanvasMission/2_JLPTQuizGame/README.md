@@ -2,7 +2,7 @@
 ## 카테고리: [게임]
 
 ### 배포 링크
-[https://gemini.google.com/share/abdeabda25f8]
+https://gemini.google.com/share/8a44baed3238
 
 ### 이 앱을 만든 이유
 - 어떤 문제/불편함을 해결하려고 했나요?

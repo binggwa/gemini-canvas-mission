@@ -105,8 +105,14 @@
                 <!-- 상단 헤더 & 프로그레스 바 (고정) -->
                 <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 shrink-0">
                     <div class="flex justify-between items-center mb-2">
-                        <span id="quiz-level-badge" class="px-3 py-1 bg-blue-100 text-blue-700 font-bold rounded-full text-sm">N5</span>
-                        <span class="text-gray-500 font-medium">문제 <span id="current-question-num" class="text-blue-600 font-bold text-lg">1</span> / 10</span>
+                        <div class="flex items-center gap-2">
+                            <!-- 홈 버튼 추가 -->
+                            <button onclick="goHome()" class="p-1.5 bg-gray-200 hover:bg-gray-300 rounded-lg text-gray-600 transition" title="처음으로 돌아가기">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                            </button>
+                            <span id="quiz-level-badge" class="px-3 py-1 bg-blue-100 text-blue-700 font-bold rounded-full text-sm">N5</span>
+                        </div>
+                        <span class="text-gray-500 font-medium">문제 <span id="current-question-num" class="text-blue-600 font-bold text-lg">1</span> / <span id="total-question-num">10</span></span>
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-2.5">
                         <div id="progress-bar" class="bg-blue-500 h-2.5 rounded-full transition-all duration-300" style="width: 10%"></div>
@@ -170,7 +176,7 @@
                         </svg>
                         <div class="absolute flex flex-col items-center justify-center text-center">
                             <span id="result-score" class="text-4xl font-bold text-gray-800">8</span>
-                            <span class="text-gray-400 text-sm">/ 10 문제</span>
+                            <span class="text-gray-400 text-sm">/ <span id="result-total">10</span> 문제</span>
                         </div>
                     </div>
 
@@ -187,6 +193,9 @@
                     </div>
 
                     <div class="flex flex-col w-full gap-3 mt-auto">
+                        <button id="btn-retry-incorrect" onclick="retryIncorrectQuiz()" class="hidden w-full py-3.5 bg-rose-500 text-white font-bold rounded-xl hover:bg-rose-600 transition shadow-sm">
+                            틀린 문제만 다시 풀기 (<span id="incorrect-count">0</span>문제)
+                        </button>
                         <button onclick="retryQuiz()" class="w-full py-3.5 bg-blue-500 text-white font-bold rounded-xl hover:bg-blue-600 transition shadow-sm">
                             틀린 문제 포함 다시풀기
                         </button>
@@ -508,7 +517,9 @@
 
         // --- 2. 상태 변수 ---
         let currentLevel = 'N5';
+        let originalQuestionList = [];
         let questionList = [];
+        let incorrectQuestions = [];
         let currentIndex = 0;
         let score = 0;
         let isAnswered = false;
@@ -522,6 +533,7 @@
         const dom = {
             levelBadge: document.getElementById('quiz-level-badge'),
             qNum: document.getElementById('current-question-num'),
+            totalQNum: document.getElementById('total-question-num'),
             progressBar: document.getElementById('progress-bar'),
             qWord: document.getElementById('question-word'),
             optionsContainer: document.getElementById('options-container'),
@@ -531,8 +543,11 @@
             fExample: document.getElementById('feedback-example'),
             nextBtnArea: document.getElementById('next-btn-container'),
             scoreNum: document.getElementById('result-score'),
+            resultTotal: document.getElementById('result-total'),
             percentage: document.getElementById('result-percentage'),
             resultCircle: document.getElementById('result-circle'),
+            btnRetryIncorrect: document.getElementById('btn-retry-incorrect'),
+            incorrectCount: document.getElementById('incorrect-count'),
             btnMnemonic: document.getElementById('btn-mnemonic'),
             mnemonicResult: document.getElementById('mnemonic-result'),
             btnStory: document.getElementById('btn-story'),
@@ -571,6 +586,8 @@
             currentLevel = level;
             questionList = [...vocabData[level]].sort(() => Math.random() - 0.5);
             questionList = questionList.slice(0, 10);
+            originalQuestionList = [...questionList]; // 전체 복구를 위해 원본 저장
+            incorrectQuestions = []; // 오답 기록 초기화
             
             currentIndex = 0;
             score = 0;
@@ -585,7 +602,8 @@
             const currentQ = questionList[currentIndex];
             
             dom.qNum.textContent = currentIndex + 1;
-            dom.progressBar.style.width = `${((currentIndex) / 10) * 100}%`;
+            dom.totalQNum.textContent = questionList.length;
+            dom.progressBar.style.width = `${((currentIndex) / questionList.length) * 100}%`;
             dom.qWord.textContent = currentQ.word;
             
             dom.feedbackCard.classList.add('hidden');
@@ -618,7 +636,11 @@
             const correctIndex = currentQ.answer;
             const isCorrect = selectedIndex === correctIndex;
             
-            if (isCorrect) score++;
+            if (isCorrect) {
+                score++;
+            } else {
+                incorrectQuestions.push(currentQ); // 오답 배열에 추가
+            }
 
             const allBtns = dom.optionsContainer.children;
             for(let i=0; i<allBtns.length; i++) {
@@ -652,7 +674,7 @@
         }
 
         function nextQuestion() {
-            if (currentIndex < 9) {
+            if (currentIndex < questionList.length - 1) {
                 currentIndex++;
                 loadQuestion();
             } else {
@@ -664,11 +686,20 @@
             dom.progressBar.style.width = '100%';
             setTimeout(() => {
                 switchScreen('result');
-                const percent = Math.round((score / 10) * 100);
+                const percent = Math.round((score / questionList.length) * 100);
                 
                 dom.scoreNum.textContent = score;
+                dom.resultTotal.textContent = questionList.length;
                 dom.percentage.textContent = `${percent}%`;
                 
+                // 오답이 있을 경우 '틀린 문제만 다시 풀기' 버튼 활성화
+                if (incorrectQuestions.length > 0) {
+                    dom.btnRetryIncorrect.classList.remove('hidden');
+                    dom.incorrectCount.textContent = incorrectQuestions.length;
+                } else {
+                    dom.btnRetryIncorrect.classList.add('hidden');
+                }
+
                 setTimeout(() => {
                     dom.resultCircle.setAttribute('stroke-dasharray', `${percent}, 100`);
                     if(percent === 100) dom.resultCircle.classList.add('text-green-500');
@@ -691,8 +722,21 @@
         }
 
         function retryQuiz() {
+            questionList = [...originalQuestionList]; // 이전에 출제된 10문제 그대로 복구 (이전 버전과 동일)
             currentIndex = 0;
             score = 0;
+            incorrectQuestions = []; // 오답 초기화
+            questionList.sort(() => Math.random() - 0.5);
+            dom.resultCircle.setAttribute('stroke-dasharray', `0, 100`);
+            switchScreen('quiz');
+            loadQuestion();
+        }
+
+        function retryIncorrectQuiz() {
+            questionList = [...incorrectQuestions]; // 틀린 문제들로만 문제 목록 교체
+            currentIndex = 0;
+            score = 0;
+            incorrectQuestions = []; // 새로운 도전을 위해 오답 기록 초기화
             questionList.sort(() => Math.random() - 0.5);
             dom.resultCircle.setAttribute('stroke-dasharray', `0, 100`);
             switchScreen('quiz');
@@ -840,10 +884,10 @@
             dom.btnStory.disabled = true;
             dom.btnStory.innerHTML = '<div class="spinner border-white border-t-indigo-200 mr-2 w-5 h-5"></div> 스토리를 쓰는 중...';
             dom.storyResult.classList.remove('hidden');
-            dom.storyResult.innerHTML = '<div class="text-center text-gray-400 py-4">방금 푼 10개의 단어를 조합하여 스토리를 만들고 있습니다...<br>잠시만 기다려주세요!</div>';
+            dom.storyResult.innerHTML = '<div class="text-center text-gray-400 py-4">방금 푼 단어들을 조합하여 스토리를 만들고 있습니다...<br>잠시만 기다려주세요!</div>';
 
             const wordsList = questionList.map(q => `${q.word}(${q.meaning})`).join(', ');
-            const prompt = `다음 10개의 일본어 단어들을 최대한 자연스럽게 모두 활용해서 JLPT ${currentLevel} 수준에 맞는 짧은 이야기(약 4~6문장)를 일본어로 작성해주세요.\n\n[사용할 단어]\n${wordsList}\n\n결과는 아래 형식으로 출력해주세요:\n\n[일본어 이야기]\n(일본어 텍스트)\n\n[한국어 발음]\n(일본어 텍스트의 한국어 발음 표기)\n\n[한국어 해석]\n(한국어 번역 텍스트)\n\n이야기 안에 사용된 10개의 단어는 **굵게(마크다운 ** 사용)** 표시해주세요.`;
+            const prompt = `다음 ${questionList.length}개의 일본어 단어들을 최대한 자연스럽게 모두 활용해서 JLPT ${currentLevel} 수준에 맞는 짧은 이야기(약 4~6문장)를 일본어로 작성해주세요.\n\n[사용할 단어]\n${wordsList}\n\n결과는 아래 형식으로 출력해주세요:\n\n[일본어 이야기]\n(일본어 텍스트)\n\n[한국어 발음]\n(일본어 텍스트의 한국어 발음 표기)\n\n[한국어 해석]\n(한국어 번역 텍스트)\n\n이야기 안에 사용된 ${questionList.length}개의 단어는 **굵게(마크다운 ** 사용)** 표시해주세요.`;
 
             try {
                 const response = await fetchGeminiWithBackoff(prompt, "당신은 일본어 교육 전문가이자, 주어진 단어를 모두 활용해 재미있는 스토리를 잘 지어내는 뛰어난 작가입니다.");
